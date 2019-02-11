@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Rapport-TP1-IFT3911</title>
+         <style type="text/css">
+        table
+        {
+            border: outset 2px black;
+            border-collapse: collapse;
+        }
+        th
+        {
+            border-bottom: double 2px black;
+        }
+        td
+        {
+            border-bottom: solid 1px black;
+        }
+        .first_col
+        {
+            border-right: double 2px black;
+        }
+    </style>
+
+    </head>
+    <body>
+
+     <h1 style="text-align: center;">
+        IFT 3911 - Devoir 1</h1>
+    <h2>
+        Informations générales</h2><hr>
+    <p>
+        <span style="font-weight: bold;">Nom: </span>Jonathan Caspar
+        <br />
+        <span style="font-weight: bold;">Matricule (4 derniers chiffres): </span>9041
+        <br />
+        <span style="font-weight: bold;">Courriel: </span>jonathan.caspar@umontreal.ca
+        <br />
+        <span style="font-weight: bold;">temps mis: </span>20 heures
+    </p>
+    <p>
+        <span style="font-weight: bold;">Nom: </span>Johnny Pho
+        <br/>
+        <span style="font-weight: bold;">Matricule(4 derniers chiffres): </span>6014
+        <br /> 
+        <span style="font-weight: bold;">Courriel: </span>johnny.pho@umontreal.ca
+        <br />
+        <span style="font-weight: bold;">temps mis: </span>20 heures
+    </p>
+    <h2>
+        Distribution des tâches</h2><hr>
+    <p>
+        <span style="font-weight: bold;">Soumetteur: </span>Jonathan Caspar
+    </p>
+    <table cellpadding="7px">
+        <thead>
+            <tr>
+                <th class="first_col">
+                    Tâches
+                </th>
+                <th>
+                    Jonathan
+                </th>
+                <th>
+                    Johnny
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="first_col">
+                    Diagramme de classe conceptuel
+                </td>
+                <td>
+                    50%
+                </td>
+                <td>
+                    50%
+                </td>
+            </tr>
+            <tr>
+                <td class="first_col">
+                    Diagrammes de séquence système
+                </td>
+                <td>
+                    70%
+                </td>
+                <td>
+                    30%
+                </td>
+            </tr>
+                <tr>
+                <td class="first_col">
+                    Diagramme de classe
+                </td>
+                <td>
+                    50%
+                </td>
+                <td>
+                    50%
+                </td>
+            </tr>
+                <tr>
+                <td class="first_col">
+                    Diagrammes de séquence
+                </td>
+                <td>
+                    25%
+                </td>
+                <td>
+                    75%
+                </td>
+            </tr>
+                <tr>
+                <td class="first_col">
+                    Diagramme de paquets
+                </td>
+                <td>
+                    10%
+                </td>
+                <td>
+                    90%
+                </td>
+            </tr>
+            </tr>
+                <tr>
+                <td class="first_col">
+                    Contraintes OCL
+                </td>
+                <td>
+                    90%
+                </td>
+                <td>
+                    10%
+                </td>
+            </tr>
+            </tr>
+                <tr>
+                <td class="first_col">
+                    Diagramme d'état
+                </td>
+                <td>
+                    65%
+                </td>
+                <td>
+                    35%
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h1>Domaine</h1><hr>
+     <p>Le projet .vpp contenant tous les diagrammes liés à la conception du domaine (diagramme de classe conceptuel, diagrammes de séquence) est accessible en cliquant <a href="Domaine/DiagClassesConceptuelles.vpp">ici</a>.</p>
+
+    <h1>Hypothèses</h1><hr>
+     <ul>
+        <li>Les avions possèdent toujours au moins une section (par défaut 1 section = intégralité des sièges qui composent l'avion).</li>
+        <li>Un siège est considéré "libre lorsqu'il possède un attribut "reservationAssociée" nul.</li>
+        <li>Un siège est considéré "réservé pour 24h" si sa "reservationAssociée" a la valeur de son attribut "Confirmé = False".</li>
+        <li>Un siège est considéré "réservé définitivement" si sa "reservationAssociée" a la valeur de son attribut "Confirmé = True".</li>
+        <li>Un client peut réserver plusieurs sièges pour une même réservation (même numéro de réservation) pour plusieurs sièges.</li>
+        <li>Un client paye ou se faire rembourser le montant adéquat immédiatement après qu'il ait demandé une annulation ou une modification de réservation.</li>
+        <li>La partie alphabétique (2 lettres) de l'identifiant d'un vol est déterminée par l'attribut "shortName" de la compagnie aérienne qui offre le vol.</li>
+     </ul>
+
+    <h2>Tâche 1 : Diagramme de classe conceptuel</h2><hr>
+    <img src="Domaine/img/ConceptDia.png" style="width:48%;">
+
+    <br><br><br>
+    <h2> Tâche 2 : Diagrammes de séquence système</h2><hr>
+
+    <p style="font-weight: bold;">1) Ajout d'avion</p>
+    <img src="Domaine/img/DSS-AjoutAvion.png" style="width:20%;">
+    <br><br/>
+
+    <p style="font-weight: bold;">2) Consultation des vols par un Administrateur</p>
+    <img src="Domaine/img/DSS-consultationVols(Admin).png" style="width:20%;">
+    <br><br/>
+
+    <p style="font-weight: bold;">3) Consultation des vols par un Client</p>
+    <img src="Domaine/img/DSS-consultationVols(Client).png" style="width:20%;">
+    <br><br/>
+
+    <p style="font-weight: bold;">4) Création d'un aéroport</p>
+    <img src="Domaine/img/DSS-CreationAeroport.png" style="width:20%;">
+    <br><br/>
+
+    <p style="font-weight: bold;">5) Création d'une compagnie aérienne</p>
+    <img src="Domaine/img/DSS-CreationCompagnieAerienne.png" style="width:20%;">
+    <br><br/>
+
+    <p style="font-weight: bold;">6) Création d'un vol</p>
+    <img src="Domaine/img/DSS-CreationVol.png" style="width:20%;">
+    <br><br/>
+
+    <p style="font-weight: bold;">7) Modification ou suppression d'un aéroport</p>
+    <img src="Domaine/img/DSS-Mod-Suppr-Aeroport.png" style="width:20%;">
+    <br><br/>
+
+    <p style="font-weight: bold;">8) Modification ou suppression d'un avion</p>
+    <img src="Domaine/img/DSS-Mod-Suppr-Avion.png" style="width:20%;">
+    <br><br/>
+
+    <p style="font-weight: bold;">9) Modification ou suppression d'une compagnie aérienne</p>
+    <img src="Domaine/img/DSS-Mod-Suppr-CompagnieAerienne.png" style="width:20%;">
+    <br><br/>
+
+    <p style="font-weight: bold;">10) Modification ou suppression d'un vol</p>
+    <img src="Domaine/img/DSS-Mod-Suppr-Vol.png" style="width:20%;">
+    <br><br/>
+
+    <p style="font-weight: bold;">11) Paiement, Modification ou suppression d'une réservation</p>
+    <img src="Domaine/img/DSS-Payer-Modifier-Supprimer-Reservation.png" style="width:20%;">
+    <br><br/>
+
+    <p style="font-weight: bold;">12) Réserver un siège</p>
+    <img src="Domaine/img/DSS-RéserverSiege.png" style="width:20%;">
+    <br><br/>
+
+    <h1>Design</h1>
+    <p>Le projet .vpp contenant tous les diagrammes liés à la conception du design (diagramme de classe conceptuel, séquence, de paquets, d'état) est accessible en cliquant <a href="Design/DiagClasseLogiciel.vpp">ici</a>.</p>
+    <h2>Tâche 3 : Diagramme de classe conceptuel</h2><hr>
+    <img src="Design/img/ConceptDia.png" style="width:48%;">
+
+ <br><br><br>
+ <h2> Tâche 4 : Diagrammes de séquence</h2><hr>
+
+    <p style="font-weight: bold;">1) Consultation des vols par un Client</p>
+    <img src="Design/img/DS-consultationVols(Client).png" style="width:50%;">
+    <br><br/>
+
+    <p style="font-weight: bold;">2) Réserver un siège</p>
+    <img src="Design/img/DS-RéserverSiege.png" style="width:50%;">
+    <br><br/>
+
+    <p style="font-weight: bold;">3) Payer un siège</p>
+    <img src="Design/img/DS-Payer-Reservation.png" style="width:50%;">
+    <br><br/>
+
+    <p style="font-weight: bold;">4) Modification ou suppression d'une réservation</p>
+    <img src="Design/img/DS-Modifier-Supprimer-Reservation.png" style="width:50%;">
+    <br><br/>
+
+<br><br><br>
+<h2> Tâche 5 : Diagramme de paquets</h2><hr>
+    <img src="Design/img/Diagramme de paquet.png" style="width:35%;">
+
+<br><br><br>
+<h2> Tâche 6 : Contraintes OCL</h2><hr>
+
+    <p>La liste des contraintes OCL se trouve dans le fichier <a href="Design/contraintesOCL.txt">accessible ici</a>.</p>
+    <p style="font-weight: bold;">1) L'aéroport de départ et d'arrivée sont différents.</p>
+
+    <p style ="margin-left: 30px;">context Vol inv:<br>
+        self.departureAirport < > self.arrivalAirport</p>
+
+
+    <p style="font-weight: bold;">2) La partie alphabétique de l'ID d'un vol est unique à chaque compagnie et la partie numérique est unique à chaque vol au sein de la même compagnie.<p>
+
+    <p style ="margin-left: 30px;">context SystemeGestion inv:<br>
+        self.compagnies=>forAll(comp | comp.volsOfferts=>forAll(flightID.substring(0,2) = comp.shortName))<br>
+<br>
+    context SystemeGestion inv:<br>
+        (((self.compagnies=>collect(shortName))=>asSet())=>size()) = (self.compagnies=>size())<br>
+<br>
+    context SystemeGestion inv:<br>
+        self.compagnies=>forAll(comp | comp.volsOfferts=>isUnique(flightID))</p>
+
+    <p style="font-weight: bold;">3) Tous les sièges d'une même section ont le même prix dans la même compagnie.<p>
+
+    <p style ="margin-left: 30px;">context CompagnieAerienne inv:<br>
+        self.avions=>forAll(avion | avion.sections=>forAll(section | ((section.sieges=>collect(price))=>asSet())=>size() = 1 ))</p>
+
+    <p style="font-weight: bold;">4) Réserver ne peut se faire que pour un siège libre. Identifiez la postcondition de l'opération réserver().<p>
+
+    <p style ="margin-left: 30px;">context SystemeGestion inv:<br>
+        self.vols=>forAll(vol | vol.reservations=>forAll( reserv | ((reserv.siegesReservés=>asSet())=>size()) =  reserv.siegesReservés=>size()))</p>
+
+
+<br>
+<h2> Tâche 7 : Diagramme d'état</h2><hr>
+    <p>Cycle de vie d'un siège<p>
+    <img src="Design/img/SM-Seat.png" style="width:30%;">
+    </body>
+</html>
