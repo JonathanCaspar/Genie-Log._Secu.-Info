@@ -1,5 +1,10 @@
-\documentclass{article}
+\documentclass[fleqn]{article}
 \usepackage[utf8]{inputenc}
+\usepackage[fleqn]{amsmath}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage[labelfont=bf]{caption}
+\usepackage{graphicx}
 
 \title{Devoir \# 1\linebreak S\'{e}curit\'{e} informatique - IFT $3275 /$ IFT 6271}
 \author{Jonathan Caspar (20059041) - Johnny Pho (20046014)}
@@ -17,11 +22,37 @@ message chiffré est en fait notre message clair! De ce fait, est-il nécessaire
 d’utiliser des générateurs de bits qui produisent seulement des clefs $k\neq 0^{l}$
 pour utiliser un masque jetable?}
 
-//TODO
+Non, cela n'est pas nécessaire. Si on retire la clé $0^l$, on viole deux principes du masque jetable :
 
-\section{\normalsize Soit un r\'{e}seau de Feistel compos\'{e} de deux ''rounds'' utilisant les fonctions de ``rounds'' $f_{1}$ et $f_{2}$. D\'{e}montrez que :\linebreak Feistel $f_{1}, f_{2}(L_{0},\ R_{0})=(L_{2},\ R_{2}) \Rightarrow$ Feistel $f_{2}, f_{1}(R_{2},\ L_{2})=(R_{0},\ L_{0})$}
+\begin{enumerate}  
+\item La clé $0^l$ est retiré de l'espace clé K, alors la répartition des clés n'est plus équiprobable.
+\item Cela représente une information supplémentaire que l'on peut extraire du masque jetable, or un masque jetable ne doit donner aucune autre information autre que la longueur du message.
+\end{enumerate}
 
-//TODO
+\section{\normalsize Soit un réseau de Feistel composé de deux ''rounds'' utilisant les fonctions de ''rounds'' $f_{1}$ et $f_{2}$. Démontrez que :\linebreak Feistel $f_{1}, f_{2}(L_{0},\ R_{0})=(L_{2},\ R_{2}) \Rightarrow$ Feistel $f_{2}, f_{1}(R_{2},\ L_{2})=(R_{0},\ L_{0})$ }
+
+Pour prouver cette implication (A$\Rightarrow$B), on suppose que le réseau A Feistel $f_{1}, f_{2}(L_{0},\ R_{0})=(L_{2},\ R_{2})$ est vrai et à partir des expressions qu'on arrive à dériver du réseau A : on se sert de ces expressions pour montrer que le réseau B Feistel est de la forme $f_{2}, f_{1}(R_{2},\ L_{2})=(R_{4},\ L_{4})$ et que $L_{4} = L_{0}$ et $R_{4} = R_{0}$.
+\newline\newline
+\underline{Hypothèses :}
+\[L_2 = R_1 = \boxed{(L_0 \oplus F(k_1, R_0))}\]
+\[R_2 = (L_1 \oplus F(k_2, R_1)) = \boxed{(R_0 \oplus F(k_2, R_1))} \textbf{ car } L_1 = R_0\]
+
+On exprime de la même manière les valeurs de $R_4$ et $L_4$ du réseau B :
+\[R_4 = L_3 = \boxed{(R_2 \oplus F(k_2, L_2))}\]
+\[L_4 = (R_3 \oplus F(k_1, L_3)) = \boxed{(L_2 \oplus F(k_1, L_3))} \textbf{ car } R_3 = L_2\]\newline
+
+En se servant des hypothèses, on fait une substitution de valeurs dans $R_4$ et $L_4$ et on simplifie :
+\[R_4 = (R_2 \oplus F(k_2, L_2)) = (R_2 \oplus F(k_2, R_1)) \textbf{ car } L_2 = R_1\]
+\[= [(R_0 \oplus F(k_2, R_1)] \oplus F(k_2, R_1)) \textbf{ car } R_2 = (R_0 \oplus F(k_2, R_1) \textbf{ par hypothèse}\]
+\[= (R_0 \oplus [F(k_2, R_1) \oplus F(k_2, R_1))] \textbf{ par associativité du XOR }\]
+\[= R_0 \oplus 0 \textbf{ car } X \oplus X = 0\]
+\[\boxed{R_4 = R_0} \textbf{ car } X \oplus 0 = X\]
+
+\[L_4 = L_2 \oplus F(k_1, L_3) = (L_2 \oplus F(k_1, R_0)) \textbf{ car } L_3 = L_4 = R_0 \textbf{ (prouvé précédemment)}\]
+\[= [(L_0 \oplus F(k_1, R_0)] \oplus F(k_1, R_0)) \textbf{ car } L_2 = (L_0 \oplus F(k_1, R_0)) \textbf{ par hypothèse}\]
+\[= (L_0 \oplus [F(k_1, R_0) \oplus F(k_1, R_0))] \textbf{ par associativité du XOR }\]
+\[= L_0 \oplus 0 \textbf{ car } X \oplus X = 0\]
+\[\boxed{L_4 = L_0} \textbf{ car } X \oplus 0 = X\]
 
 \section{\normalsize  D\'{e}montrez la propri\'{e}t\'{e} de compl\'{e}mentarit\'{e} de DES, c'est- \`{a}-dire que :
 $$
@@ -33,5 +64,45 @@ pour toute clef $k$ et message $m$ (o\`{u} $\overline{x}$ repr\'{e}sente la n\'{
 
 \section{\normalsize}
 
-//TODO
+\begin{table}[H]
+\captionsetup{labelfont=bf}
+\caption{Fréquences des différentielles de sortie $\Delta Y$
+(colonnes) pour chaque différentielle d’entrée $\Delta X$ (lignes) :\newline}
+\begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\cline{2-18}
+                                                            & \multicolumn{17}{c|}{\textbf{$\Delta Y$}}                                                                                                                                                                                  \\ \hline
+\multicolumn{1}{|c|}{\multirow{17}{*}{\textbf{$\Delta X$}}} & \textbf{}  & \textbf{0} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} & \textbf{6} & \textbf{7} & \textbf{8} & \textbf{9} & \textbf{A} & \textbf{B} & \textbf{C} & \textbf{D} & \textbf{E} & \textbf{F} \\ \cline{2-18} 
+\multicolumn{1}{|c|}{}                                      & \textbf{0} & 16         & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          \\ \cline{2-18} 
+\multicolumn{1}{|c|}{}                                      & \textbf{1} & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 2          & 6          & 4          & 0          & 0          & 0          & 2          & 2          \\ \cline{2-18} 
+\multicolumn{1}{|c|}{}                                      & \textbf{2} & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 2          & 2          & 2          & 6          & 4          & 0          & 0          & 0          \\ \cline{2-18} 
+\multicolumn{1}{|c|}{}                                      & \textbf{3} & 0          & 2          & 6          & 4          & 0          & 2          & 2          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          \\ \cline{2-18} 
+\multicolumn{1}{|c|}{}                                      & \textbf{4} & 0          & 0          & 0          & 0          & 6          & 6          & 2          & 2          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          \\ \cline{2-18} 
+\multicolumn{1}{|c|}{}                                      & \textbf{5} & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 2          & 2          & 6          & 2          & 4          & 0          \\ \cline{2-18} 
+\multicolumn{1}{|c|}{}                                      & \textbf{6} & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 4          & 0          & 0          & 0          & 2          & 2          & 6          & 2          \\ \cline{2-18} 
+\multicolumn{1}{|c|}{}                                      & \textbf{7} & 0          & 2          & 2          & 0          & 2          & 0          & 4          & 6          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          \\ \cline{2-18} 
+\multicolumn{1}{|c|}{}                                      & \textbf{8} & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 4          & 0          & 0          & 2          & 2          & 2          & 6          \\ \cline{2-18} 
+\multicolumn{1}{|c|}{}                                      & \textbf{9} & 0          & 2          & 0          & 2          & 2          & 0          & 6          & 4          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          \\ \cline{2-18} 
+\multicolumn{1}{|c|}{}                                      & \textbf{A} & 0          & 0          & 2          & 2          & 6          & 6          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          \\ \cline{2-18} 
+\multicolumn{1}{|c|}{}                                      & \textbf{B} & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 2          & 2          & 2          & 6          & 0          & 4          \\ \cline{2-18} 
+\multicolumn{1}{|c|}{}                                      & \textbf{C} & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 2          & 2          & 6          & 2          & 0          & 4          & 0          & 0          \\ \cline{2-18} 
+\multicolumn{1}{|c|}{}                                      & \textbf{D} & 0          & 2          & 4          & 6          & 0          & 2          & 0          & 2          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          \\ \cline{2-18} 
+\multicolumn{1}{|c|}{}                                      & \textbf{E} & 0          & 8          & 2          & 2          & 0          & 0          & 2          & 2          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          \\ \cline{2-18} 
+\multicolumn{1}{|c|}{}                                      & \textbf{F} & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 6          & 2          & 0          & 4          & 0          & 0          & 2          & 2          \\ \hline
+\end{tabular}
+\end{table}
+
+Schéma du SPN démontrant une différentielle caractéristique avec :
+$\boxed{\Delta P = \text{ 0000 1110 0000 0000}}$\newline\newline
+On se sert de ces différentielles dans les S-Boxes :
+
+\[S_{1,2} \text{ : } \Delta X = E \Rightarrow \Delta Y = 1 \text{       avec probabilité } \frac{8}{16}\]
+\[S_{2,4} \text{ : } \Delta X = 4 \Rightarrow \Delta Y = 4 \text{       avec probabilité } \frac{6}{16}\]
+\[S_{3,2} \text{ : } \Delta X = 1 \Rightarrow \Delta Y = 9 \text{       avec probabilité } \frac{6}{16}\]
+
+\includegraphics[width=300px]{SPN-Differential}
+\centering
+
+\noindent
+
+On obtient la différentielle intermédiaire suivante $\boxed{\Delta I = \text{ 0100 0000 0000 0100}}$
 \end{document}

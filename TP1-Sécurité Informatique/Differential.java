@@ -5,18 +5,20 @@
 import java.util.*;
 
 public class Differential{
-	//Écrire votre numéro d'équipe içi !!!
-	public static int teamNumber = 12;
+	//Écrire votre numéro d'équipe içi !!! #12
+	public static int teamNumber = 0;
 
 	public static SPNServer server = new SPNServer();
 
 	//Différentielle d'entrée \Delta_P
-	//ex : ""0000101100000000""
-	public static String plain_diff = "";
+	//ex : ""0000 1011 0000 0000""
+	//final = 0000111000000000
+	public static String plain_diff = "0000101100000000";
 
 	//Différentielle intermédiaire \Delta_I
-	//ex : "0000011000000110"
-	public static String int_diff = "";
+	//ex : "0000 0110 0000 0110"
+	//final = 0100000000000100
+	public static String int_diff = "0000011000000110";
 
 	//Boîte à substitutions de l'exemple de la démonstration #3
 	public static String[] sub_box_exemple = new String[]{"1110", "0100", "1101", "0001", "0010", "1111", "1011", "1000",
@@ -25,13 +27,14 @@ public class Differential{
 	public static String[] sub_box_inv_exemple = new String[]{"1110", "0011", "0100", "1000", "0001", "1100", "1010", "1111", 
 				   									  			"0111", "1101", "1001", "0110", "1011", "0010", "0000", "0101"};
 
-	//Sorties des boîtes à substitutions du SPN
+	//Sorties des boîtes à substitutions du SPN     0    	1		2		3		4		5		6		7
 	public static String[] sub_box = new String[]{"0010", "1011", "1001", "0011", "0111", "1110", "1101", "0101", 
 												  "1100", "0110", "0000", "1111", "1000", "0001", "0100", "1010"};
-
-	//Entrées des boîtes à substitutions du SPN
+ 	//												8		9		A 		B 		 C 		D 		E 		 F
+	//Entrées des boîtes à substitutions du SPN        0    	1		2		3		4		5		6		7
 	public static String[] sub_box_inv = new String[]{"1010", "1101", "0000", "0011", "1110", "0111", "1001", "0100", 
 												      "1100", "0010", "1111", "0001", "1000", "0110", "0101", "1011"};
+    //													8		9		A 		B 		 C 		D 		E 		 F
 
 	//Permutations : --> Notez que la permutation "perm" inverse est la même puisqu'elle est symmétrique
 	public static int[] perm = new int[]{0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15};
@@ -49,13 +52,35 @@ public class Differential{
 
 		for(int i = 0; i < 16; i++){
 			int[] line = new int[16];
-
-			//TO DO
-
 			result[i] = line;
 		}
+		
+		// Calculer deltaY = S(I) xor S(I xor J)
+		for(int i = 0; i < 16; i++){		
+			String I = toBinary(i, 4);
+			String sub_I = sub(I, sub_box); // S(I)
 
+			for(int j = 0; j < 16; j++){
+				String J = toBinary(j, 4);
+				String IxorJ  = xor(I, J); // I xor J
+				String sub_IxorJ = sub(IxorJ, sub_box); // S(I xor J)
+				
+				int deltaX = Integer.parseInt(J, 2);
+				int deltaY = Integer.parseInt(xor(sub_I, sub_IxorJ), 2);
+				result[deltaX][deltaY]++;
+			}
+		}
 		return result;
+	}
+	
+	public static String toBinary(int value, int nbOfDigits) {
+		String text = Integer.toBinaryString(value);
+
+		while(text.length() != nbOfDigits){
+			text = "0" + text;
+		}
+
+		return text;
 	}
 
 	//Retroune 16 bits aléatoires en String
@@ -86,7 +111,7 @@ public class Differential{
 	public static String sub(String input, String[] sub_box){
 		int value = 0;
 
-		for(var i = 0; i < input.length(); i++){
+		for(int i = 0; i < input.length(); i++){
 			value <<= 1;
 
 			if(input.charAt(i) == '1'){
@@ -137,12 +162,11 @@ public class Differential{
 		if(a.length() != b.length()){
 			return null;
 		}
-		var result = "";
+		String result = "";
 
-		for(var i = 0; i < a.length(); i++){
+		for(int i = 0; i < a.length(); i++){
 			result += a.charAt(i) ^ b.charAt(i);
 		}
-
 		return result;
 	}
 
@@ -173,10 +197,11 @@ public class Differential{
 		ArrayList<String> plaintexts = new ArrayList<>();
 
 		for(int i = 0; i < 1000; i++){
-			//Créaton de paires de messages clairs qui satisfont
-			//la différentielle d'entrée \Delta_P
+			//Cr�ation de paires de messages clairs qui satisfont
+			//la diff�rentielle d'entr�e \Delta_P
 
-			//TO DO
+			plaintexts.add( xor(plain_diff, getRandomPlaintext()) );
+			
 		}
 
 		//Encryption de ces messages clairs
@@ -184,19 +209,46 @@ public class Differential{
 
 		for(int j = 0; j < 256; j++){
 			//Affectation du nombre de fois que chaque sous-clef partielle
-			//j possible nous donne la différentielle intermédiaire 
-			//"int_diff" à counts[j]
-
-			//TO DO
+			//j possible nous donne la diff�rentielle interm�diaire 
+			//"int_diff" � counts[j]
+			String jBinary = toBinary(j, 8);
+			String jBinary_sub_key = "0000" + jBinary.substring(0, 4) + "0000" + jBinary.substring(4,8);
+			
+			for(int index = 0; index < ciphers.size(); index++) {
+				
+				String cipher_xor = xor(ciphers.get(index), jBinary_sub_key);
+				
+				String sub_key =  permute( cipher_xor , perm);
+				
+				String final_sub_key = "0000" + sub(sub_key.substring(0, 4), sub_box_inv_exemple) + "0000" + sub(sub_key.substring(4,8), sub_box_inv_exemple);
+				
+				if(final_sub_key.equals(int_diff)) {
+					counts[j]++;
+				}
+			}
+			
 		}
 
-		//Déterminer la fréquence de clef la plus haute
-		//TO DO
-
-		//Déterminer la sous-clef k_5^* avec des 'X' au bits inconnues
-		//TO DO
-
-		return "";
+		//D�terminer la fr�quence de clef la plus haute
+		int max = 0;
+		int maxIndex = -1;
+		System.out.println("Computing max..");
+		for(int j = 0; j < 256; j++){
+			if(counts[j] > max) {
+				max = counts[j];
+				maxIndex = j;
+			}
+			
+		}
+		
+		if(maxIndex == -1) return "NO VALUE FOUND";
+		System.out.println("Value of maxIndex = "+maxIndex+" and max = "+max);
+		
+		String highest_freq_key = toBinary(maxIndex, 8);
+		System.out.println("Found highest prob for key = "+ highest_freq_key);
+		//D�terminer la sous-clef k_5^* avec des 'X' au bits inconnues
+		String sub_key_k5 = "XXXX" + highest_freq_key.substring(0, 4) + "XXXX" + highest_freq_key.substring(4);
+		return sub_key_k5;
 	}
 
 	public static String getPartialMasterkey(String partialSubkey, int n){
@@ -217,7 +269,7 @@ public class Differential{
 		//Generating random plaintext
 		String text = getRandomPlaintext();
 
-		String res_server = server.encrypt(text,teamNumber);
+		//String res_server = server.encrypt(text,teamNumber);
 
 		for(int i = 0; i < 4096 && !found; i++){
 			//Déterminer lesquelles des 2^12 (4096) possibilités de bits
@@ -235,9 +287,9 @@ public class Differential{
 		//pour chaque différentielle d'entrée
 		//System.out.println(Arrays.deepToString(produceDiffTable()));
 
-		//Calcul de la sous-clef partielle k_5^*
-		//String partialSubkey = getPartialSubkey();
-		//System.out.println("Sous-clef partielle k_5^* : " + partialSubkey);
+		//Calcul de la sous-clef partielle k_5^* 0   
+		String partialSubkey = getPartialSubkey();
+		System.out.println("Sous-clef partielle k_5^* : " + partialSubkey);
 
 		//Calcul de la clef maître partielle k^* 
 		//String partialMasterkey = getPartialMasterkey(partialSubkey, 5);
