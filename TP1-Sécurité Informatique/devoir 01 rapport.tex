@@ -60,8 +60,31 @@ DES_{k}(m)=\overline{DES_{\overline{k}}(\overline{m})}
 $$
 pour toute clef $k$ et message $m$ (o\`{u} $\overline{x}$ repr\'{e}sente la n\'{e}gation logique bit \`{a} bit de x).}
 
-//TODO
+La notation $L_x, R_x$ correspond à la concaténation des deux séquences.\newline\newline
+Supposons qu'on applique deux DES (le premier avec la clé $K_0$, le deuxième avec la clé $k_0$) à deux messages $m_1 =  L_0, R_0$ et $m_2 =  l_0, r_0$, la version chiffrée de ces messages est de la forme $c_1 =  L_n, R_n$ et $c_2 =  l_n, r_n$ avec $n$ le nombre de rounds des DES.\newline\newline
+On va montrer que sous l'hypothèse où $\boxed{l_0 = \overline{L_0}$, $r_0 = \overline{R_0}$ et $k_0 = \overline{K_0}}$ alors $\boxed{l_n = \overline{L_n}$, $r_n = \overline{R_n}$ et $k_n = \overline{K_n}}$ et donc que $c_2 = l_n, r_n = \overline{L_n}, \overline{R_n} = \overline{c_1}$
+\newline\newline
+\underline{Cas de base (n = 1):}\newline
+\[L_1 = R_0\]
+\[R_1 = L_0 \oplus F(R_0, K_0)\]
 
+\[l_1 = r_0 = \overline{R_0} \text{ par hypothèse} = \boxed{\overline{L_1}} \text{ car } R_0 = L_1\] 
+\[r_1 = l_0 \oplus F(r_0, k_0) = \overline{L_0} \oplus F(\overline{R_0}, \overline{K_0}) \text{ par hypothèse}\]
+\[= \overline{L_0 \oplus F(\overline{R_0}, \overline{K_0})} \text{ car } \overline{A \oplus B} = \overline{A} \oplus B\]
+\[= \overline{L_0 \oplus F(R_0, K_0)} \text{ car la fonction F se base sur XOR et } \overline{A} \oplus \overline{B} = A \oplus B\]
+\[= \boxed{\overline{R_1}} \text{ car } L_0 \oplus F(R_0, K_0) = R_1\]
+\newline\newline
+\underline{Par induction sur n, si vrai pour n alors vrai pour n+1 :}\newline
+\[L_{n+1} = R_n\]
+\[R_{n+1} = L_n \oplus F(R_n, K_n)\]
+
+\[l_{n+1} = r_n = \overline{R_n} \text{ par hypothèse} = \boxed{\overline{L_{n+1}}} \text{ car } R_n = L_{n+1}\] 
+\[r_{n+1} = l_n \oplus F(r_n, k_n) = \overline{L_n} \oplus F(\overline{R_n}, \overline{K_n}) \text{ par hypothèse}\]
+\[= \overline{L_n \oplus F(\overline{R_n}, \overline{K_n})} \text{ car } \overline{A \oplus B} = \overline{A} \oplus B\]
+\[= \overline{L_n \oplus F(R_n, K_n)} \text{ car la fonction F se base sur XOR et } \overline{A} \oplus \overline{B} = A \oplus B\]
+\[= \boxed{\overline{R_{n+1}}} \text{ car } L_n \oplus F(R_n, K_n) = R_{n+1}\]\newline
+
+\noindent On obtient donc $\boxed{c_2 = l_n, r_n = \overline{L_n}, \overline{R_n} = \overline{c_1}}$
 \section{\normalsize}
 
 \begin{table}[H]
