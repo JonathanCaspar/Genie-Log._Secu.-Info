@@ -18,7 +18,7 @@ public class Differential{
 	//Diff√©rentielle interm√©diaire \Delta_I
 	//ex : "0000 0110 0000 0110"
 	//final = 0100000000000100
-	public static String int_diff = "0000011000000110";
+	public static String int_diff = "0100000000000100";
 
 	//Bo√Æte √† substitutions de l'exemple de la d√©monstration #3
 	public static String[] sub_box_exemple = new String[]{"1110", "0100", "1101", "0001", "0010", "1111", "1011", "1000",
@@ -207,13 +207,38 @@ public class Differential{
 		//Encryption de ces messages clairs
 		ArrayList<String> ciphers = server.encrypt(plaintexts,teamNumber);
 
+		boolean[] boites_impliquees = new boolean[] {false, false, false, false};
+		int[][] bits_impliquees = new int[4][4];
+
+		//DÈterminer les boites de substitution impliquÈes
+		for(int i = 0; i < 4; i++) {
+			for(int index = (4*i); index < (4*i+4); index++) {
+				
+				if(int_diff.charAt(index) == '1') {
+					boites_impliquees[i] = true;
+					break;
+				}
+			}
+		}
+		
+		//DÈterminer les bits impliquÈes aprËs permutation de la sortie des boites impliquÈes
+		for(int i = 0; i < 4; i++) {
+			
+			if(boites_impliquees[i]) {	
+				for(int index = (4*i); index < (4*i+4); index++) {
+					bits_impliquees[i][index-(4*i)] = perm[index];
+				}
+			}
+		}
+		
 		for(int j = 0; j < 256; j++){
 			//Affectation du nombre de fois que chaque sous-clef partielle
 			//j possible nous donne la diffÈrentielle intermÈdiaire 
 			//"int_diff" ‡ counts[j]
 			String jBinary = toBinary(j, 8);
-			String jBinary_sub_key = "0000" + jBinary.substring(0, 4) + "0000" + jBinary.substring(4,8);
+			String jBinary_sub_key = "XXXXXXXXXXXXXXXX";
 			
+						
 			for(int index = 0; index < ciphers.size(); index++) {
 				
 				String cipher_xor = xor(ciphers.get(index), jBinary_sub_key);
@@ -289,7 +314,7 @@ public class Differential{
 
 		//Calcul de la sous-clef partielle k_5^* 0   
 		String partialSubkey = getPartialSubkey();
-		System.out.println("Sous-clef partielle k_5^* : " + partialSubkey);
+		//System.out.println("Sous-clef partielle k_5^* : " + partialSubkey);
 
 		//Calcul de la clef ma√Ætre partielle k^* 
 		//String partialMasterkey = getPartialMasterkey(partialSubkey, 5);

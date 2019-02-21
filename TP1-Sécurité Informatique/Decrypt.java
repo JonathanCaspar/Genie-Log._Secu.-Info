@@ -21,13 +21,17 @@ public class Decrypt{
 		
 		//Parcours du texte chiffré
 		for (int i = 0; i < text.length(); i++){
-			//Décryptage pour chaque période
-			int cipherValue = text.charAt(i) - 'a';
-			keyIndex = (keyIndex + 1)%26;
-			int keyValue 	= Character.getNumericValue(key.charAt(keyIndex));
-			//System.out.println("Found keyValue = "+keyValue);
-			int plainValue  = (26 + Math.abs(cipherValue - keyValue)) % 26 ;
-			result += alphabet.charAt(plainValue);
+			char letter = text.charAt(i);
+			if ((letter >= 'a' && letter <= 'z')) {
+				//Décryptage pour chaque période
+				int cipherValue = letter - 'a';
+				int keyValue 	= Character.getNumericValue(key.charAt(keyIndex));
+				//System.out.println("Found keyValue = "+keyValue +" cipherValue = "+cipherValue);
+				int plainValue  = (26+(cipherValue - keyValue))% 26 ;
+				keyIndex = (keyIndex + 1) % key.length();
+				result += alphabet.charAt(plainValue);
+			}
+			else result += letter;
 		}
 		/*
 		int cipherValue = 'a' - 'a';
@@ -35,7 +39,7 @@ public class Decrypt{
 		int plainValue  = Math.abs( 26 + (cipherValue - keyValue) % 26 );
 		result += alphabet.charAt(plainValue);
 		System.out.println("a ("+cipherValue+") - "+keyValue+" = "+  alphabet.charAt(Math.abs(26+(cipherValue - keyValue)%26) ));
-*/System.out.println(result);
+*/
 		return result;
 	}
 
@@ -50,6 +54,7 @@ public class Decrypt{
 			
 			// Parcours du courant p
 			for(int i = 0; (1 + (i*p)) <= text.length() ; i++){
+				
 				char letter = text.charAt(i*p);
 				if ((letter >= 'a' && letter <= 'z')) {
 					int letterFound = letter - 'a';
@@ -66,7 +71,7 @@ public class Decrypt{
 				freq += (freqNormalized*freqNormalized);
 			}
 			
-			if(Math.abs(freq-0.065) < tolerance/100000) keySize = p;
+			if(Math.abs(freq-0.0667) < tolerance/10000) keySize = p;
 			
 		}
 		System.out.println(keySize);
@@ -83,7 +88,7 @@ public class Decrypt{
 
 		int[] potential_key = new int[keySize];
 	
-		for(int courant = 1; courant < keySize; courant++) {
+		for(int courant = 0; courant < keySize; courant++) {
 			
 			double[] h = new double[26];
 			double freqTotal = 0;
@@ -97,7 +102,6 @@ public class Decrypt{
 					h[letterFound]++;
 					freqTotal++;
 				}
-				
 			}
 			
 			// Normalisation des fréquences observées
@@ -111,13 +115,13 @@ public class Decrypt{
 				double k_freq = 0;
 				
 				for(int i = 0; i < 26 ; i++){
-					k_freq += (f[i] * h[Math.abs((i-k) % 26)]);
+					k_freq += (f[i] * h[(26+(i-k)) % 26]);
 				}
 				
-				double dist_to_usual_freq = Math.abs(k_freq-0.065);
+				double dist_to_usual_freq = Math.abs(k_freq-0.0667);
 				if(dist_to_usual_freq < min_dist) {
 					min_dist = dist_to_usual_freq;
-					potential_key[courant-1] = k;
+					potential_key[courant] = k;
 				}
 			}
 
