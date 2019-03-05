@@ -79,6 +79,7 @@ public class Decrypt{
 
 	public static String getKey(String text, int keySize){
 		String result = "";
+		String parsedText = extractOnlyLetters(text);
 
 		//Fréquences théorique des lettres en anglais: f[0]=a, f[1]=b, etc.
 		double[] f = new double[]{0.082,0.015,0.028,0.043,0.127,0.022,0.02,
@@ -89,24 +90,19 @@ public class Decrypt{
 	
 		//Parcours des courants C1 jusqu'à C_keysize avec différente taille de clé p
 		for (int courant = 0; courant < keySize; courant++){
-			System.out.println("----- Courant " + (courant+1));
+			//System.out.println("----- Courant " + (courant));
 			double[] obsFreq = new double[26];
 			double freqTotal = 0;
 			
-			// Parcours du courant
-			int indexCourant = courant;
-			
-			for (int i = 0; i < text.length(); i++) {
-				char letter = text.charAt(i);
+			// Parcours du courant			
+			for (int i = courant; i < parsedText.length(); i++) {
+				char letter = parsedText.charAt(i);
 				
-				if(letter >= 'a' && letter <= 'z') { // si ce n'est pas une lettre on avance à la prochaine lettre
-					if((indexCourant) % keySize == 0) {
-						int letterFound = letter - 'a';
-						//System.out.println("Found --- "+letter);
-						obsFreq[letterFound]++;
-						freqTotal++;
-					}
-					indexCourant++;
+				if((i % keySize) == courant) {
+					int letterFound = letter - 'a';
+					//System.out.println("----Found --- "+letter);
+					obsFreq[letterFound]++;
+					freqTotal++;
 				}
 			}
 
@@ -124,7 +120,7 @@ public class Decrypt{
 				double k_freq = 0;
 				
 				for(int i = 0; i < 26 ; i++){
-					k_freq += (f[i] * obsFreq[(i+k)%26]);
+					k_freq += (f[i] * obsFreq[(i+k) % 26]);
 				}
 				
 				double distToNormalFreq = Math.abs(k_freq-0.065);
@@ -134,17 +130,31 @@ public class Decrypt{
 					//System.out.println("Courant : "+courant+ " k = "+ k + " = "+alphabet.charAt(k));
 					
 				}
-				System.out.println("k = "+ k+ " = "+alphabet.charAt(k) +" freq = "+ k_freq);
+				//System.out.println("k = "+ k+ " = "+alphabet.charAt(k) +" freq = "+ k_freq);
 
 			}
 
 		}
 		
 		for(int r = 0; r < keySize; r++) {
-			result += potential_key[r];
-			System.out.print(alphabet.charAt(potential_key[r])); 
+			result += alphabet.charAt(potential_key[r]); 
 		}
-		//System.out.println(result);
+		System.out.println(result);
+		return result;
+	}
+	
+	public static String extractOnlyLetters(String text) {
+		String result = "";
+				
+		for (int i = 0; i < text.length(); i++) {
+			char letter = text.charAt(i);
+			
+			if(letter >= 'a' && letter <= 'z') { // si ce n'est pas une lettre on avance à la prochaine lettre
+				result += letter;
+
+			}
+		}
+		
 		return result;
 	}
 
@@ -152,7 +162,7 @@ public class Decrypt{
 		String text = "";
 
 		try{
-			text += readFile("src/cipher.txt", StandardCharsets.UTF_8);
+			text += readFile("cipherOriginal/cipher.txt", StandardCharsets.UTF_8);
 		}catch(IOException e) {
 			System.out.println("Can't load file");
 		}
@@ -161,17 +171,15 @@ public class Decrypt{
 		int tolerance = 1;
 
 		int keySize = getKeySize(text, tolerance);
-
+		System.out.println(keySize);
+		
 		String key = getKey(text, keySize);
 
-		/*text = decrypt(text, key);
-		try (PrintWriter out = new PrintWriter("src/result.txt")) {
+		text = decrypt(text, key);
+		try (PrintWriter out = new PrintWriter("result.txt")) {
 		    out.println(text);
 		}catch(IOException e) {
 			System.out.println("Can't write file");
-		}*/
-
+		}
 	}
-
-
 }
