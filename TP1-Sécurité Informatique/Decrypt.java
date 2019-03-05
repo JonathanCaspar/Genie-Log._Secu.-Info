@@ -6,9 +6,12 @@ import java.io.IOException;
 import java.nio.charset.*; 
 import java.nio.file.Files; 
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.io.PrintWriter;
 
 public class Decrypt{
+	public static String alphabet = "abcdefghijklmnopqrstuvwxyz";
+	
 	static String readFile(String path, Charset encoding) throws IOException {
 		byte[] encoded = Files.readAllBytes(Paths.get(path));
 		return new String(encoded, encoding);
@@ -16,30 +19,22 @@ public class Decrypt{
 
 	public static String decrypt(String text, String key){
 		String result = "";
-		String alphabet = "abcdefghijklmnopqrstuvwxyz";
 		int keyIndex = 0;
 		
-		//Parcours du texte chiffré
-		for (int i = 0; i < text.length(); i++){
+		//Parcours des courants C1 jusqu'à C_keysize avec différente taille de clé p
+		for (int i = 0; i < text.length(); i++) {
 			char letter = text.charAt(i);
-			if ((letter >= 'a' && letter <= 'z')) {
-				//Décryptage pour chaque période
+			
+			if(letter >= 'a' && letter <= 'z') { // si ce n'est pas une lettre on avance à la prochaine lettre
+				int keyValue 	= key.charAt(keyIndex) - 'a';
 				int cipherValue = letter - 'a';
-				int keyValue 	= Character.getNumericValue(key.charAt(keyIndex));
-				//System.out.println("Found keyValue = "+keyValue +" cipherValue = "+cipherValue);
 				int plainValue  = (26+(cipherValue - keyValue))% 26 ;
 				keyIndex = (keyIndex + 1) % key.length();
 				result += alphabet.charAt(plainValue);
 			}
 			else result += letter;
 		}
-		/*
-		int cipherValue = 'a' - 'a';
-		int keyValue 	= Character.getNumericValue(key.charAt(0));
-		int plainValue  = Math.abs( 26 + (cipherValue - keyValue) % 26 );
-		result += alphabet.charAt(plainValue);
-		System.out.println("a ("+cipherValue+") - "+keyValue+" = "+  alphabet.charAt(Math.abs(26+(cipherValue - keyValue)%26) ));
-*/
+
 		return result;
 	}
 
@@ -47,34 +42,38 @@ public class Decrypt{
 		int keySize = 0;
 		
 		//Parcours du courant C1 avec différente taille de clé p
-		for (int p = 1; p < text.length(); p++){
+		for (int key = 1; key < text.length(); key++){
 			double[] obsFreq = new double[26];
 			double freq = 0;
 			double freqTotal = 0;
 			
 			// Parcours du courant p
-			for(int i = 0; (1 + (i*p)) <= text.length() ; i++){
-				
-				char letter = text.charAt(i*p);
-				if ((letter >= 'a' && letter <= 'z')) {
-					int letterFound = letter - 'a';
-					//System.out.println("Found " + text.charAt(i*p) + " = " + letterFound);
-					obsFreq[letterFound]++;
-					freqTotal++;
-				}
-				
-			}
+			int indexCourant = -1;
 			
+			for (int i = 0; i < text.length(); i++) {
+				char letter = text.charAt(i);
+				
+				if(letter >= 'a' && letter <= 'z') { // si ce n'est pas une lettre on avance à la prochaine lettre
+					if(indexCourant % key == 0) {
+						int letterFound = letter - 'a';
+						obsFreq[letterFound]++;
+						freqTotal++;
+					}
+					indexCourant++;
+				}
+			}
+
 			// Calcul de la somme du carré des fréquences observées
 			for(int i = 0; i < 26 ; i++){
-				double freqNormalized = obsFreq[i]/freqTotal;
-				freq += (freqNormalized*freqNormalized);
+				obsFreq[i] = obsFreq[i] / freqTotal;
+				freq += (obsFreq[i]*obsFreq[i]);
 			}
 			
-			if(Math.abs(freq-0.0667) < tolerance/10000) keySize = p;
-			
+			if(Math.abs(freq-0.065) < tolerance/100) {
+				keySize = key;
+				break;
+			}		
 		}
-		System.out.println(keySize);
 		return keySize;
 	}
 
@@ -88,49 +87,64 @@ public class Decrypt{
 
 		int[] potential_key = new int[keySize];
 	
-		for(int courant = 0; courant < keySize; courant++) {
-			
-			double[] h = new double[26];
+		//Parcours des courants C1 jusqu'à C_keysize avec différente taille de clé p
+		for (int courant = 0; courant < keySize; courant++){
+			System.out.println("----- Courant " + (courant+1));
+			double[] obsFreq = new double[26];
 			double freqTotal = 0;
 			
-			// Parcours du courant p
-			for(int i = 0; (courant + (i*keySize)) < text.length() ; i++){
-				char letter = text.charAt(courant+(i*keySize));
+			// Parcours du courant
+			int indexCourant = courant;
+			
+			for (int i = 0; i < text.length(); i++) {
+				char letter = text.charAt(i);
 				
-				if ((letter >= 'a' && letter <= 'z')) {
-					int letterFound = letter - 'a';
-					h[letterFound]++;
-					freqTotal++;
+				if(letter >= 'a' && letter <= 'z') { // si ce n'est pas une lettre on avance à la prochaine lettre
+					if((indexCourant) % keySize == 0) {
+						int letterFound = letter - 'a';
+						//System.out.println("Found --- "+letter);
+						obsFreq[letterFound]++;
+						freqTotal++;
+					}
+					indexCourant++;
 				}
 			}
-			
-			// Normalisation des fréquences observées
+
+			// Normalisation des fréquences observées pour le courant actuel
 			for(int i = 0; i < 26 ; i++){
-				h[i] = h[i]/freqTotal;
+				obsFreq[i] = obsFreq[i] / freqTotal;
 			}
 			
+			
 			//Calculer fréquence pour chaque k (clé de décalage possible)
-			double min_dist = 1;
+			double minDist = 1;
+
 			for(int k = 0; k < 26 ; k++){
+				
 				double k_freq = 0;
 				
 				for(int i = 0; i < 26 ; i++){
-					k_freq += (f[i] * h[(26+(i-k)) % 26]);
+					k_freq += (f[i] * obsFreq[(i+k)%26]);
 				}
 				
-				double dist_to_usual_freq = Math.abs(k_freq-0.0667);
-				if(dist_to_usual_freq < min_dist) {
-					min_dist = dist_to_usual_freq;
+				double distToNormalFreq = Math.abs(k_freq-0.065);
+				if(distToNormalFreq < minDist) {
+					minDist = distToNormalFreq;
 					potential_key[courant] = k;
+					//System.out.println("Courant : "+courant+ " k = "+ k + " = "+alphabet.charAt(k));
+					
 				}
+				System.out.println("k = "+ k+ " = "+alphabet.charAt(k) +" freq = "+ k_freq);
+
 			}
 
 		}
 		
 		for(int r = 0; r < keySize; r++) {
 			result += potential_key[r];
+			System.out.print(alphabet.charAt(potential_key[r])); 
 		}
-		System.out.println(result);
+		//System.out.println(result);
 		return result;
 	}
 
@@ -142,7 +156,6 @@ public class Decrypt{
 		}catch(IOException e) {
 			System.out.println("Can't load file");
 		}
-		
 		//TO DO: Vous devez trouver la tolérance nécessaire
 		//à utiliser pour trouver la longueur de la clef
 		int tolerance = 1;
@@ -151,13 +164,12 @@ public class Decrypt{
 
 		String key = getKey(text, keySize);
 
-		text = decrypt(text, key);
-
+		/*text = decrypt(text, key);
 		try (PrintWriter out = new PrintWriter("src/result.txt")) {
 		    out.println(text);
 		}catch(IOException e) {
 			System.out.println("Can't write file");
-		}
+		}*/
 
 	}
 
