@@ -32,6 +32,9 @@ Non, cela n'est pas nécessaire. Si on retire la clé $0^l$, on viole deux princ
 \section{\normalsize Soit un réseau de Feistel composé de deux ''rounds'' utilisant les fonctions de ''rounds'' $f_{1}$ et $f_{2}$. Démontrez que :\linebreak Feistel $f_{1}, f_{2}(L_{0},\ R_{0})=(L_{2},\ R_{2}) \Rightarrow$ Feistel $f_{2}, f_{1}(R_{2},\ L_{2})=(R_{0},\ L_{0})$ }
 
 Pour prouver cette implication (A$\Rightarrow$B), on suppose que le réseau A Feistel $f_{1}, f_{2}(L_{0},\ R_{0})=(L_{2},\ R_{2})$ est vrai et à partir des expressions qu'on arrive à dériver du réseau A : on se sert de ces expressions pour montrer que le réseau B Feistel est de la forme $f_{2}, f_{1}(R_{2},\ L_{2})=(R_{4},\ L_{4})$ et que $L_{4} = L_{0}$ et $R_{4} = R_{0}$.
+
+    \includegraphics[width=180px]{FeistelIn.png}
+    \includegraphics[width=180px]{FeistelOut.png}
 \newline\newline
 \underline{Hypothèses :}
 \[L_2 = R_1 = \boxed{(L_0 \oplus F(k_1, R_0))}\]
@@ -45,8 +48,7 @@ En se servant des hypothèses, on fait une substitution de valeurs dans $R_4$ et
 \[R_4 = (R_2 \oplus F(k_2, L_2)) = (R_2 \oplus F(k_2, R_1)) \textbf{ car } L_2 = R_1\]
 \[= [(R_0 \oplus F(k_2, R_1)] \oplus F(k_2, R_1)) \textbf{ car } R_2 = (R_0 \oplus F(k_2, R_1) \textbf{ par hypothèse}\]
 \[= (R_0 \oplus [F(k_2, R_1) \oplus F(k_2, R_1))] \textbf{ par associativité du XOR }\]
-\[= R_0 \oplus 0 \textbf{ car } X \oplus X = 0\]
-\[\boxed{R_4 = R_0} \textbf{ car } X \oplus 0 = X\]
+\[= R_0 \oplus 0 \textbf{ car } X \oplus X = 0 \textbf{ et donc } \boxed{R_4 = R_0} \textbf{ car } X \oplus 0 = X\]
 
 \[L_4 = L_2 \oplus F(k_1, L_3) = (L_2 \oplus F(k_1, R_0)) \textbf{ car } L_3 = L_4 = R_0 \textbf{ (prouvé précédemment)}\]
 \[= [(L_0 \oplus F(k_1, R_0)] \oplus F(k_1, R_0)) \textbf{ car } L_2 = (L_0 \oplus F(k_1, R_0)) \textbf{ par hypothèse}\]
@@ -122,7 +124,7 @@ On se sert de ces différentielles dans les S-Boxes :
 \[S_{2,4} \text{ : } \Delta X = 4 \Rightarrow \Delta Y = 4 \text{       avec probabilité } \frac{6}{16}\]
 \[S_{3,2} \text{ : } \Delta X = 1 \Rightarrow \Delta Y = 9 \text{       avec probabilité } \frac{6}{16}\]
 
-\includegraphics[width=300px]{SPN-Differential}
+\includegraphics[width=240px]{SPN-Differential}
 \centering
 
 \noindent
