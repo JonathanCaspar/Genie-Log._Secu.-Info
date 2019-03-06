@@ -4,6 +4,8 @@
 
 import java.util.*;
 
+import javafx.scene.shape.Box;
+
 public class Differential{
 	//√âcrire votre num√©ro d'√©quipe i√ßi !!! #12
 	public static int teamNumber = 0;
@@ -208,7 +210,7 @@ public class Differential{
 		ArrayList<String> ciphers = server.encrypt(plaintexts,teamNumber);
 
 		boolean[] boites_impliquees = new boolean[] {false, false, false, false};
-		int[][] bits_impliquees = new int[4][4];
+		int[][] k5_bits_impliquees = new int[4][4];
 
 		//DÈterminer les boites de substitution impliquÈes
 		for(int i = 0; i < 4; i++) {
@@ -226,22 +228,31 @@ public class Differential{
 			
 			if(boites_impliquees[i]) {	
 				for(int index = (4*i); index < (4*i+4); index++) {
-					bits_impliquees[i][index-(4*i)] = perm[index];
+					k5_bits_impliquees[i][index-(4*i)] = perm[index];
 				}
 			}
 		}
 		
+		System.out.println("boites_impliquees : " + Arrays.toString(boites_impliquees));
+		System.out.println("bits_impliquees : " + Arrays.deepToString(k5_bits_impliquees));
+
 		for(int j = 0; j < 256; j++){
 			//Affectation du nombre de fois que chaque sous-clef partielle
 			//j possible nous donne la diffÈrentielle intermÈdiaire 
 			//"int_diff" ‡ counts[j]
-			String jBinary = toBinary(j, 8);
-			String jBinary_sub_key = "XXXXXXXXXXXXXXXX";
-			
+			String jBinary = toBinary(j, 8);			
 						
-			for(int index = 0; index < ciphers.size(); index++) {
+			for(String cipher : ciphers) {
 				
-				String cipher_xor = xor(ciphers.get(index), jBinary_sub_key);
+				// Restriction du cipher aux sections concernÈes 
+				String cipher8bits = "";
+				for (int i = 0; i < boites_impliquees.length; i++) {
+					if(boites_impliquees[i]) {
+						cipher8bits += cipher.substring(4*i, 4*i+4);
+					}
+				}
+
+				String cipher_xor = xor(cipher8bits, jBinary);
 				
 				String sub_key =  permute( cipher_xor , perm);
 				
