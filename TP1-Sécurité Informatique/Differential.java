@@ -199,8 +199,8 @@ public class Differential{
 		ArrayList<String> plaintexts = new ArrayList<>();
 
 		for(int i = 0; i < 1000; i++){
-			//Création de paires de messages clairs qui satisfont
-			//la différentielle d'entrée \Delta_P
+			//Crê¢´ion de paires de messages clairs qui satisfont
+			//la diffê³¥ntielle d'entrê¥ \Delta_P
 
 			plaintexts.add( xor(plain_diff, getRandomPlaintext()) );
 			
@@ -212,7 +212,7 @@ public class Differential{
 		boolean[] boites_impliquees = new boolean[] {false, false, false, false};
 		int[][] k5_bits_impliquees = new int[4][4];
 
-		//Déterminer les boites de substitution impliquées
+		//Dêµ¥rminer les boites de substitution impliquê¦³
 		for(int i = 0; i < 4; i++) {
 			for(int index = (4*i); index < (4*i+4); index++) {
 				
@@ -223,7 +223,7 @@ public class Differential{
 			}
 		}
 		
-		//Déterminer les bits impliquées après permutation de la sortie des boites impliquées
+		//Dêµ¥rminer les bits impliquê¦³ apré³ permutation de la sortie des boites impliquê¦³
 		for(int i = 0; i < 4; i++) {
 			
 			if(boites_impliquees[i]) {	
@@ -238,34 +238,55 @@ public class Differential{
 
 		for(int j = 0; j < 256; j++){
 			//Affectation du nombre de fois que chaque sous-clef partielle
-			//j possible nous donne la différentielle intermédiaire 
-			//"int_diff" à counts[j]
-			String jBinary = toBinary(j, 8);			
+			//j possible nous donne la diffê³¥ntielle intermê¥©aire 
+			//"int_diff" à¡£ounts[j]
+			String jBinary = toBinary(j, 16);			
 						
 			for(String cipher : ciphers) {
-				
-				// Restriction du cipher aux sections concernées 
+				// Restriction du cipher aux sections concernê¦³ 
+				/*
 				String cipher8bits = "";
 				for (int i = 0; i < boites_impliquees.length; i++) {
 					if(boites_impliquees[i]) {
 						cipher8bits += cipher.substring(4*i, 4*i+4);
 					}
 				}
-
-				String cipher_xor = xor(cipher8bits, jBinary);
+				 */
+				
+				//On a dabord, ex: 1001 1101 1011 0001
+				String cipher_xor = xor(cipher, jBinary);
+				//Apres le xor on a ex: 0101 1000 1110 1011 (juste un exemple, ne va pas verifier si ca fait vraiment ca svp...). les bit concerne sont toujour pas au bon endroit a ce point
+				//                      ^ ^       ^^^   ^^^
+				//						--------XOR--------
+				//		jBinary = 256 = 1 1       111   111
+				//								 =
+				//						1 1		  000   100 => à faire permuter vers le haut et substitution pour comparer avec intDiff
 				
 				String sub_key =  permute( cipher_xor , perm);
+				//Apres la permutation vers le haut: 0110 0001 1111 1001 (encore une fois ceci est juste un exemple) les bit concerner sont a la bonne place pour la prochaine operation
+				//                                   ^^^^           ^^^^
+				boolean isGood = true;
+				for (int i = 0; i < boites_impliquees.length; i++) {
+					if(boites_impliquees[i]) {
+						//Sur la position des boite impliquer, on inverse subtitue. Dans cet exemple, 0110 et 1001 sont substituer.
+						//Si la substitution de ces deux la sont egals tout deux a 0100(car notre cas est 0100 0000 0000 0100) on est bon.
+						if(sub(sub_key.substring(4*i, 4*i + 4), sub_box_inv) == int_diff.substring(4*i, 4*i + 4)) {
+							
+						}
+						else {
+							isGood = false;
+						}
+					}
+				}
 				
-				String final_sub_key = "0000" + sub(sub_key.substring(0, 4), sub_box_inv_exemple) + "0000" + sub(sub_key.substring(4,8), sub_box_inv_exemple);
-				
-				if(final_sub_key.equals(int_diff)) {
+				if(isGood) {
 					counts[j]++;
 				}
 			}
 			
 		}
 
-		//Déterminer la fréquence de clef la plus haute
+		//Dêµ¥rminer la frê²µence de clef la plus haute
 		int max = 0;
 		int maxIndex = -1;
 		System.out.println("Computing max..");
@@ -282,7 +303,7 @@ public class Differential{
 		
 		String highest_freq_key = toBinary(maxIndex, 8);
 		System.out.println("Found highest prob for key = "+ highest_freq_key);
-		//Déterminer la sous-clef k_5^* avec des 'X' au bits inconnues
+		//Dêµ¥rminer la sous-clef k_5^* avec des 'X' au bits inconnues
 		String sub_key_k5 = "XXXX" + highest_freq_key.substring(0, 4) + "XXXX" + highest_freq_key.substring(4);
 		return sub_key_k5;
 	}

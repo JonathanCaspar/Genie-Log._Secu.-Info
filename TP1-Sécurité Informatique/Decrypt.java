@@ -19,13 +19,13 @@ public class Decrypt{
 
 	public static String decrypt(String text, String key){
 		String result = "";
-		int keyIndex = 0;
+		int keyIndex = 0; // indice cyclique sur la longueur de la clé
 		
-		//Parcours des courants C1 jusqu'à C_keysize avec différente taille de clé p
+		//Parcours des courants C1 jusqu'à C_keysize
 		for (int i = 0; i < text.length(); i++) {
 			char letter = text.charAt(i);
 			
-			if(letter >= 'a' && letter <= 'z') { // si ce n'est pas une lettre on avance à la prochaine lettre
+			if(letter >= 'a' && letter <= 'z') { // si ce n'est pas une lettre, on l'ajoute au résultat sans la décrypter
 				int keyValue 	= key.charAt(keyIndex) - 'a';
 				int cipherValue = letter - 'a';
 				int plainValue  = (26+(cipherValue - keyValue))% 26 ;
@@ -41,34 +41,35 @@ public class Decrypt{
 	public static int getKeySize(String text, double tolerance){
 		int keySize = 0;
 		
-		//Parcours du courant C1 avec différente taille de clé p
+		//Parcours du courant C1 avec différente taille de clé 'key'
 		for (int key = 1; key < text.length(); key++){
 			double[] obsFreq = new double[26];
 			double freq = 0;
-			double freqTotal = 0;
+			double nbLettres = 0;
 			
 			// Parcours du courant p
-			int indexCourant = -1;
+			int indexLetter = -1; // indice representant la position des lettres uniquement (exclut les chiffres, espaces ..)
 			
 			for (int i = 0; i < text.length(); i++) {
 				char letter = text.charAt(i);
 				
-				if(letter >= 'a' && letter <= 'z') { // si ce n'est pas une lettre on avance à la prochaine lettre
-					if(indexCourant % key == 0) {
+				if(letter >= 'a' && letter <= 'z') { // si ce n'est pas une lettre on avance au prochain caractère
+					if(indexLetter % key == 0) { // si c'est l'indice faisant partie du courant, on enregistre l'occurence de cette lettre
 						int letterFound = letter - 'a';
 						obsFreq[letterFound]++;
-						freqTotal++;
+						nbLettres++;
 					}
-					indexCourant++;
+					indexLetter++;
 				}
 			}
 
 			// Calcul de la somme du carré des fréquences observées
 			for(int i = 0; i < 26 ; i++){
-				obsFreq[i] = obsFreq[i] / freqTotal;
+				obsFreq[i] = obsFreq[i] / nbLettres;
 				freq += (obsFreq[i]*obsFreq[i]);
 			}
 			
+			// Fréquence trouvée suffisement proche de celle espérée ?
 			if(Math.abs(freq-0.065) < tolerance/100) {
 				keySize = key;
 				break;
@@ -80,27 +81,24 @@ public class Decrypt{
 	public static String getKey(String text, int keySize){
 		String result = "";
 		String parsedText = extractOnlyLetters(text);
+		int[] potential_key = new int[keySize];
 
 		//Fréquences théorique des lettres en anglais: f[0]=a, f[1]=b, etc.
 		double[] f = new double[]{0.082,0.015,0.028,0.043,0.127,0.022,0.02,
 			0.061,0.07,0.02,0.08,0.04,0.024,0.067,0.015,0.019,0.001,0.06,
 			0.063,0.091,0.028,0.02,0.024,0.002,0.02,0.001};
-
-		int[] potential_key = new int[keySize];
 	
 		//Parcours des courants C1 jusqu'à C_keysize avec différente taille de clé p
 		for (int courant = 0; courant < keySize; courant++){
-			//System.out.println("----- Courant " + (courant));
 			double[] obsFreq = new double[26];
 			double freqTotal = 0;
 			
-			// Parcours du courant			
+			// Parcours des lettres du courant actuel		
 			for (int i = courant; i < parsedText.length(); i++) {
 				char letter = parsedText.charAt(i);
 				
 				if((i % keySize) == courant) {
 					int letterFound = letter - 'a';
-					//System.out.println("----Found --- "+letter);
 					obsFreq[letterFound]++;
 					freqTotal++;
 				}
@@ -111,12 +109,10 @@ public class Decrypt{
 				obsFreq[i] = obsFreq[i] / freqTotal;
 			}
 			
-			
-			//Calculer fréquence pour chaque k (clé de décalage possible)
+			// Calculer fréquence pour chaque k (clé de décalage possible) et selectionner le k qui la minimise
 			double minDist = 1;
-
+			
 			for(int k = 0; k < 26 ; k++){
-				
 				double k_freq = 0;
 				
 				for(int i = 0; i < 26 ; i++){
@@ -127,32 +123,26 @@ public class Decrypt{
 				if(distToNormalFreq < minDist) {
 					minDist = distToNormalFreq;
 					potential_key[courant] = k;
-					//System.out.println("Courant : "+courant+ " k = "+ k + " = "+alphabet.charAt(k));
-					
 				}
-				//System.out.println("k = "+ k+ " = "+alphabet.charAt(k) +" freq = "+ k_freq);
-
 			}
-
 		}
 		
+		// Transposition de la séquence de chiffre en séquence de lettre
 		for(int r = 0; r < keySize; r++) {
 			result += alphabet.charAt(potential_key[r]); 
 		}
-		System.out.println(result);
+		
 		return result;
 	}
 	
+	// Retourne la version uniquement composée de lettres d'une entrée 'text'
 	public static String extractOnlyLetters(String text) {
 		String result = "";
 				
 		for (int i = 0; i < text.length(); i++) {
-			char letter = text.charAt(i);
+			char letter = text.charAt(i);	
 			
-			if(letter >= 'a' && letter <= 'z') { // si ce n'est pas une lettre on avance à la prochaine lettre
-				result += letter;
-
-			}
+			if(letter >= 'a' && letter <= 'z') result += letter;
 		}
 		
 		return result;
@@ -162,16 +152,14 @@ public class Decrypt{
 		String text = "";
 
 		try{
-			text += readFile("cipherOriginal/cipher.txt", StandardCharsets.UTF_8);
+			text += readFile("cipher.txt", StandardCharsets.UTF_8);
 		}catch(IOException e) {
 			System.out.println("Can't load file");
 		}
-		//TO DO: Vous devez trouver la tolérance nécessaire
-		//à utiliser pour trouver la longueur de la clef
+		
 		int tolerance = 1;
 
 		int keySize = getKeySize(text, tolerance);
-		System.out.println(keySize);
 		
 		String key = getKey(text, keySize);
 

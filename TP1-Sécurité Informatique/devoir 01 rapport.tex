@@ -87,12 +87,11 @@ On va montrer que sous l'hypothèse où $\boxed{l_0 = \overline{L_0}$, $r_0 = \o
 \[= \boxed{\overline{R_{n+1}}} \text{ car } L_n \oplus F(R_n, K_n) = R_{n+1}\]\newline
 
 \noindent On obtient donc $\boxed{c_2 = l_n, r_n = \overline{L_n}, \overline{R_n} = \overline{c_1}}$
-\section{\normalsize}
+\section{\normalsize Fréquences des différentielles de sortie $\Delta Y$
+(colonnes) pour chaque différentielle d’entrée $\Delta X$ (lignes) :\newline\newline\newline}
 
 \begin{table}[H]
 \captionsetup{labelfont=bf}
-\caption{Fréquences des différentielles de sortie $\Delta Y$
-(colonnes) pour chaque différentielle d’entrée $\Delta X$ (lignes) :\newline}
 \begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \cline{2-18}
                                                             & \multicolumn{17}{c|}{\textbf{$\Delta Y$}}                                                                                                                                                                                  \\ \hline
@@ -116,6 +115,7 @@ On va montrer que sous l'hypothèse où $\boxed{l_0 = \overline{L_0}$, $r_0 = \o
 \end{tabular}
 \end{table}
 
+
 Schéma du SPN démontrant une différentielle caractéristique avec :
 $\boxed{\Delta P = \text{ 0000 1110 0000 0000}}$\newline\newline
 On se sert de ces différentielles dans les S-Boxes :
@@ -124,10 +124,12 @@ On se sert de ces différentielles dans les S-Boxes :
 \[S_{2,4} \text{ : } \Delta X = 4 \Rightarrow \Delta Y = 4 \text{       avec probabilité } \frac{6}{16}\]
 \[S_{3,2} \text{ : } \Delta X = 1 \Rightarrow \Delta Y = 9 \text{       avec probabilité } \frac{6}{16}\]
 
-\includegraphics[width=240px]{SPN-Differential}
+\begin{minipage}[c]{\textwidth}
 \centering
+\includegraphics[width=220px]{SPN-Differential}
 
+\end{minipage}
+\newline\newline
 \noindent
-
-On obtient la différentielle intermédiaire suivante $\boxed{\Delta I = \text{ 0100 0000 0000 0100}}$
+Après une dernière permutation, on obtient la différentielle intermédiaire suivante $\boxed{\Delta I = \text{ 0000 1001 0000 0000}}$ avec probabilité $\frac{8}{16} * \frac{6}{16} * \frac{6}{16} = \frac{288}{4096} \approx 7\%$
 \end{document}
